@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+import sys, os, git
+import connected as cx
+from git import Repo
+
+repo = Repo('.')
+last_commit = repo.head.commit
+parent_commit = last_commit.parents[0]
+filename_list = last_commit.stats.files
+parent_filename_list = parent_commit.stats.files
+
+good_graph = True
+for filename in parent_filename_list:
+    print('\n\n' + filename + '\n\n')
+for filename in filename_list:
+    print('\n\n' + filename + '\n\n')
+    if filename.endswith('.graphml'):
+        if not (filename in parent_filename_list and filename not in filename_list):
+            if not cx.is_connected(filename):
+                print('Graph ' + filename + ' is not a single component\n')
+                good_graph = False
+with open('results.txt' , 'w') as f:
+    if not good_graph:
+        f.write('0')
+        sys.exit(1)
+    else:
+        f.write('1')
