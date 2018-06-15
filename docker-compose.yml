@@ -6,7 +6,7 @@ services:
       - db.env
     environment:
       - BUILDBOT_CONFIG_DIR=config
-      - BUILDBOT_CONFIG_URL=git://github.com/jimmykim1/learning-buildbot/blob/master/master.cfg
+      - BUILDBOT_CONFIG_URL=http://github.com/jimmykim1/learning-buildbot/blob/master/master.cfg
       - BUILDBOT_WORKER_PORT=9989
       - BUILDBOT_WEB_URL=http://localhost:8010/
       - BUILDBOT_WEB_PORT=tcp:port=8010
