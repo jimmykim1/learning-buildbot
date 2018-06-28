@@ -6,22 +6,30 @@ from git import Repo
 repo = Repo('.')
 last_commit = repo.head.commit
 parent_commit = last_commit.parents[0]
-filename_list = last_commit.stats.files
-parent_filename_list = parent_commit.stats.files
+filename_list = last_commit.tree.blobs
+parent_filename_list = parent_commit.tree.blobs
+failed_files = []
 
 good_graph = True
-for filename in parent_filename_list:
-    print('\n\n' + filename + '\n\n')
+depth = False
+
 for filename in filename_list:
-    print('\n\n' + filename + '\n\n')
-    if filename.endswith('.graphml'):
-        if not (filename in parent_filename_list and filename not in filename_list):
-            if not cx.is_connected(filename):
-                print('Graph ' + filename + ' is not a single component\n')
-                good_graph = False
+    if filename not in parent_filename_list and filename.path.endswith('.graphml'):
+        if not cx.is_connected(filename.path):
+            print('Graph ' + filename.path + ' is not a single component\n')
+            good_graph = False
+            failed_files.append(filename.path)
+    if filename == 'test.txt':
+        depth = True
+
 with open('results.txt' , 'w') as f:
     if not good_graph:
         f.write('0')
+        f.write('\n')
+        for filename in failed_files:
+            f.write(filename)
         sys.exit(1)
+    elif depth:
+        f.write('2')
     else:
         f.write('1')
