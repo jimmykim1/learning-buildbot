@@ -38,7 +38,10 @@ RUN \
 # install pip dependencies
     pip install --upgrade pip setuptools wheel && \
     pip install "buildbot[bundle,tls]" && \
-    pip install -r ./requirements.txt && \
+    pip install requests==2.18.4 && \
+    pip install psycopg2==2.7.4 && \
+    pip install gitpython && \
+    pip install networkx && \
     pip install "/usr/src/buildbot" && \
     mkdir -p wheels && \
     pip list --format freeze | grep -v '^buildbot=' > wheels/wheels.txt && \
