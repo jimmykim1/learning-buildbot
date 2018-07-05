@@ -38,7 +38,7 @@ RUN \
 # install pip dependencies
     pip install --upgrade pip setuptools wheel && \
     pip install "buildbot[bundle,tls]" && \
-    pip install -r /usr/src/buildbot/requirements-docker-extras.txt && \
+    pip install -r ./requirements.txt && \
     pip install "/usr/src/buildbot" && \
     mkdir -p wheels && \
     pip list --format freeze | grep -v '^buildbot=' > wheels/wheels.txt && \
