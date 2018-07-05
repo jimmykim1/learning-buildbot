@@ -89,7 +89,7 @@ RUN \
     pip install --upgrade pip setuptools && \
     pip install /wheels/*.whl && \
     pip install "buildbot[bundle,tls]" && \
-    pip install "/usr/src/buildbot" && \
+    pip install git+ssh://git@github.com/buildbot/buildbot/tree/master/master.git && \
     pip install gitpython && \
     pip install networkx && \
     rm -r /root/.cache /wheels
