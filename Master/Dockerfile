@@ -1,99 +1,89 @@
-# buildbot/buildbot-master
-
 # please follow docker best practices
 # https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/
+# Dockerfile customizations for building buildbot's CI test suite.
 #
+# Provided here as a real life example on how to make a customized
+# worker Dockerfile for your project
 
-# Use a multi-stage build:
-# https://docs.docker.com/develop/develop-images/multistage-build/
-#
-# Provide an intermediate Docker image named "buildbot-build".
-# This intermediate image builds binary wheels
-# which get installed in the final image.
-# This allows us to avoid installing build tools like gcc in the final image.
+FROM        buildbot/buildbot-worker:master
+MAINTAINER  Buildbot Maintainers
 
-FROM        alpine:3.7 AS buildbot-build
-MAINTAINER  Buildbot maintainers
+# Switch to root to be able to install stuff
+USER root
 
-# Last build date - this can be updated whenever there are security updates so
-# that everything is rebuilt
-ENV         security_updates_as_of 2018-04-10
+# This will make apt-get install without question
+ARG         DEBIAN_FRONTEND=noninteractive
 
+# Switch to root to be able to install stuff
+USER root
 
-COPY . /usr/src/buildbot
-RUN \
-    echo @edgecommunity http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
-    echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
-    apk add --no-cache \
+# on debian postgresql sets default encoding to the one of the distro, so we need to force it for utf8
+RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+ENV LANG=en_US.utf8
+
+# install the DB drivers we need to test against databases, as well as git and nodejs
+RUN apt-get update && \
+    curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
+    apt-get install -y python-software-properties software-properties-common && \
+    # add python2.6 and python3.6 repositories
+    add-apt-repository -y ppa:deadsnakes/ppa  && \
+    apt-get update && \
+    apt-get install -y \
+        libmysqlclient-dev \
+        libjpeg-dev \
+        libpq-dev \
+        # selenium is a java thing
+        default-jre \
+        # chromium needs xvfb even with --headless
+        xvfb \
+        chromium-browser \
         git \
-        python-dev \
-        libffi-dev \
-        libressl-dev \
-        postgresql-dev \
-        py-pip \
-        alpine-sdk \
-        tar \
-        tzdata \
-        curl && \
-# install pip dependencies
-    pip install --upgrade pip setuptools wheel && \
-    pip install "buildbot[bundle,tls]" && \
-    pip install requests==2.18.4 && \
-    pip install psycopg2==2.7.4 && \
-    pip install gitpython && \
-    pip install networkx && \
-    pip install git+https://github.com/buildbot/buildbot/tree/master/master.git && \
-    mkdir -p wheels && \
-    pip list --format freeze | grep -v '^buildbot=' > wheels/wheels.txt && \
-    cd wheels && \
-    pip wheel -r wheels.txt
+        gconf2 \
+        python-virtualenv \
+        enchant \
+        libenchant-dev \
+        locales \
+        aspell \
+        aspell-en \
+        ispell \
+        iamerican \
+        fontconfig \
+        nodejs \
+        postgresql \
+        sudo \
+        python3.4-dev  \
+        python3.5-dev  \
+        python3.6-dev  \
+        python2.6-dev  \
+        mysql-server && \
+    \
+    localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 && \
+    npm install -g yarn && \
+    yarn global add protractor coffee-script && webdriver-manager update --chrome --no-gecko &&\
+    rm -rf /var/lib/apt/lists/*
 
-
-
-#==============================================================================================
-# Build the final image here.  Use build artifacts from the buildbot-build
-# container.
-
-# Note that the UI and worker packages are the latest version published on pypi
-# This is to avoid pulling node inside this container
-
-FROM        alpine:3.7
-MAINTAINER  Buildbot maintainers
-
-# Last build date - this can be updated whenever there are security updates so
-# that everything is rebuilt
-ENV         security_updates_as_of 2018-04-11
-
-
-COPY . /usr/src/buildbot
-
-# Build wheels in other container using the Dockerfile.build
-# and copy them into this container.
-# We do this to avoid having to pull gcc for building native extensions.
-COPY --from=buildbot-build /wheels /wheels
+COPY pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf
+COPY sudoers /etc/sudoers
+COPY mysql /etc/init.d/mysql
 RUN \
-    echo @edgecommunity http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
-    echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
-    apk add --no-cache \
-        git \
-        python \
-        postgresql-libs \
-        py-pip \
-        gosu@testing \
-        dumb-init \
-        tar \
-        tzdata \
-        curl \
-        openssh && \
-# install pip dependencies
-    pip install --upgrade pip setuptools && \
-    pip install /wheels/*.whl && \
-    pip install "buildbot[bundle,tls]" && \
-    pip install git+https://github.com/buildbot/buildbot/tree/master/master.git && \
-    pip install gitpython && \
-    pip install networkx && \
-    rm -r /root/.cache /wheels
+    /etc/init.d/postgresql start && \
+    su postgres -c "createuser buildbot" && \
+    su postgres -c "psql -c 'create database bbtest WITH ENCODING UTF8 TEMPLATE template0 ;'"
+# Switch to regular user for security reasons
+USER buildbot
 
-
-WORKDIR /var/lib/buildbot
-CMD ["dumb-init", "/usr/src/buildbot/docker/start_buildbot.sh"]
+# generate cache for the buildbot dependencies
+RUN \
+    mkdir -p /tmp/bb && \
+    curl -sL https://github.com/buildbot/buildbot/archive/master.tar.gz | \
+    tar  --strip-components=1 -C /tmp/bb -xz && \
+    virtualenv /tmp/bb/sandbox && \
+    . /tmp/bb/sandbox/bin/activate && \
+    pip install -U pip && \
+    pip install -e '/tmp/bb/master[test,docs,tls]' && \
+    pip install -e /tmp/bb/pkg && \
+    pip install -e /tmp/bb/www/base && \
+    pip install networkx
+    pip install networkx
+    pip install gitpython
+    rm -rf /tmp/bb
