@@ -42,7 +42,7 @@ RUN \
     pip install psycopg2==2.7.4 && \
     pip install gitpython && \
     pip install networkx && \
-    pip install "/usr/src/buildbot" && \
+    pip install git+ssh://git@github.com/buildbot/buildbot/tree/master/master.git && \
     mkdir -p wheels && \
     pip list --format freeze | grep -v '^buildbot=' > wheels/wheels.txt && \
     cd wheels && \
