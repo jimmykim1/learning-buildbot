@@ -83,7 +83,6 @@ RUN \
     pip install -e '/tmp/bb/master[test,docs,tls]' && \
     pip install -e /tmp/bb/pkg && \
     pip install -e /tmp/bb/www/base && \
-    pip install networkx
-    pip install networkx
-    pip install gitpython
+    pip install networkx && \
+    pip install gitpython && \
     rm -rf /tmp/bb
