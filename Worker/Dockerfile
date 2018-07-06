@@ -12,6 +12,6 @@ RUN \
     pip install -e '/tmp/bb/master[test,docs,tls]' && \
     pip install -e /tmp/bb/pkg && \
     pip install -e /tmp/bb/www/base && \
-    rm -rf /tmp/bb && \
     pip install networkx && \
-    pip install gitpython
+    pip install gitpython && \
+    rm -rf /tmp/bb
