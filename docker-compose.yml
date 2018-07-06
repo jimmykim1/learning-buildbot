@@ -1,7 +1,7 @@
 version: '2'
 services:
   buildbot:
-    image: "buildbot/buildbot-master:master"
+    image: "jimmykim08/learn-buildbot:secondtry"
     env_file:
       - db.env
     environment:
