@@ -24,7 +24,7 @@ services:
       - 5432
 
   worker:
-    image: "jimmykim08/learn-buildbot:pleasework"
+    image: "jimmykim08/learn-buildbot:basic-worker-image"
     environment:
       BUILDMASTER: buildbot
       BUILDMASTER_PORT: 9989

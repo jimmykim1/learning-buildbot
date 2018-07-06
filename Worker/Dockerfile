@@ -9,9 +9,6 @@ RUN \
     virtualenv /tmp/bb/sandbox && \
     . /tmp/bb/sandbox/bin/activate && \
     pip install -U pip && \
-    pip install -e '/tmp/bb/master[test,docs,tls]' && \
-    pip install -e /tmp/bb/pkg && \
-    pip install -e /tmp/bb/www/base && \
     pip install networkx && \
     pip install gitpython && \
     rm -rf /tmp/bb
