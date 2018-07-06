@@ -1,7 +1,7 @@
 version: '2'
 services:
   buildbot:
-    image: "jimmykim08/learn-buildbot:secondtry"
+    image: "buildbot/buildbot-master:master"
     env_file:
       - db.env
     environment:
@@ -24,7 +24,7 @@ services:
       - 5432
 
   worker:
-    image: "buildbot/buildbot-worker:master"
+    image: "jimmykim08/learn-buildbot:pleasework"
     environment:
       BUILDMASTER: buildbot
       BUILDMASTER_PORT: 9989
