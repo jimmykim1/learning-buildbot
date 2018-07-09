@@ -1,7 +1,7 @@
 version: '2'
 services:
   buildbot:
-    image: "jimmykim08/learn-buildbot:master-just-base-and-pip"
+    image: "buildbot/buildbot-master:master"
     env_file:
       - db.env
     environment:
