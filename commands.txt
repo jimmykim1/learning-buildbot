@@ -3,3 +3,5 @@
 docker kill $(docker ps -q)
 
 docker-compose up
+
+git add pass2_test.graphml
