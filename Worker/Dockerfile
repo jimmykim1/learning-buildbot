@@ -62,9 +62,6 @@ RUN apt-get update && \
     yarn global add protractor coffee-script && webdriver-manager update --chrome --no-gecko &&\
     rm -rf /var/lib/apt/lists/*
 
-COPY pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf
-COPY sudoers /etc/sudoers
-COPY mysql /etc/init.d/mysql
 RUN \
     /etc/init.d/postgresql start && \
     su postgres -c "createuser buildbot" && \

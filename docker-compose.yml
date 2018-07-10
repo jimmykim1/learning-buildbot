@@ -24,7 +24,7 @@ services:
       - 5432
 
   worker:
-    image: "buildbot/buildbot-worker:master"
+    image: "jimmykim08/learn-buildbot:image-provided-in-docs-copied"
     environment:
       BUILDMASTER: buildbot
       BUILDMASTER_PORT: 9989
