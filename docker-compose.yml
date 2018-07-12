@@ -24,7 +24,7 @@ services:
       - 5432
 
   worker:
-    image: "jimmykim08/learn-buildbot:adding-tac-from-github"
+    image: "buildbot/buildbot-worker:master"
     environment:
       BUILDMASTER: buildbot
       BUILDMASTER_PORT: 9989
