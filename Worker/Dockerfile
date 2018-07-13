@@ -3,6 +3,6 @@ MAINTAINER  Buildbot maintainers
 
 USER root
 
-ADD https://github.com/jimmykim1/learning-buildbot/blob/master/Worker/buildbot.tac /buildbot/buildbot.tac
+RUN pip install networkx
 
 USER buildbot
