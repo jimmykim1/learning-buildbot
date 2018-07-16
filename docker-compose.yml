@@ -24,7 +24,7 @@ services:
       - 5432
 
   worker:
-    image: "jimmykim08/learn-buildbot:same-as-last-image-but-no-pidfile"
+    image: "jimmykim08/learn-buildbot:worker-just-base-and-pip"
     environment:
       BUILDMASTER: buildbot
       BUILDMASTER_PORT: 9989
