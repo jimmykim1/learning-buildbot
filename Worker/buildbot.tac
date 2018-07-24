@@ -16,7 +16,7 @@ application = service.Application('buildbot-worker')
 application.setComponent(ILogObserver, FileLogObserver(sys.stdout).emit)
 # and worker on the same process!
 buildmaster_host = os.environ.get("BUILDMASTER", 'localhost')
-port = int(os.environ.get("BUILDMASTER_PORT", 5000))
+port = int(os.environ.get("BUILDMASTER_PORT", 9989))
 workername = os.environ.get("WORKERNAME", 'docker')
 passwd = os.environ.get("WORKERPASS")
 

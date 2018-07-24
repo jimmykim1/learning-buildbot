@@ -7,7 +7,7 @@ services:
     environment:
       - BUILDBOT_CONFIG_DIR=config
       - BUILDBOT_CONFIG_URL=https://github.com/jimmykim1/learning-buildbot/archive/master.tar.gz
-      - BUILDBOT_WORKER_PORT=5000
+      - BUILDBOT_WORKER_PORT=9989
       - BUILDBOT_WEB_URL=http://localhost:8010/
       - BUILDBOT_WEB_PORT=tcp:port=8010
     links:
@@ -27,7 +27,7 @@ services:
     image: "buildbot/buildbot-worker:master"
     environment:
       BUILDMASTER: buildbot
-      BUILDMASTER_PORT: 5000
+      BUILDMASTER_PORT: 9989
       WORKERNAME: example-worker
       WORKERPASS: pass
       WORKER_ENVIRONMENT_BLACKLIST: DOCKER_BUILDBOT* BUILDBOT_ENV_* BUILDBOT_1* WORKER_ENVIRONMENT_BLACKLIST
