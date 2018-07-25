@@ -14,9 +14,9 @@ services:
       - db
     depends_on:
       - db
-    ports:
-      - "8010:8010"
-      - "9989:9989"
+    expose:
+      - 8010
+      - 9989
   db:
     env_file:
       - db.env
