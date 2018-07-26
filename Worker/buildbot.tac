@@ -17,7 +17,7 @@ application.setComponent(ILogObserver, FileLogObserver(sys.stdout).emit)
 # and worker on the same process!
 buildmaster_host = os.environ.get("BUILDMASTER", 'localhost')
 port = int(os.environ.get("BUILDMASTER_PORT", 9989))
-workername = os.environ.get("WORKERNAME", 'example-worker')
+workername = os.environ.get("WORKERNAME", 'docker')
 passwd = os.environ.get("WORKERPASS")
 
 # delete the password from the environ so that it is not leaked in the log
