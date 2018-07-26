@@ -14,6 +14,8 @@ services:
       - db
     depends_on:
       - db
+    ports:
+      - "8010:8010"
   db:
     env_file:
       - db.env
