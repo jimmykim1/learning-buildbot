@@ -16,6 +16,7 @@ services:
       - db
     ports:
       - "8010:8010"
+      - "9989:9989"
 
   db:
     env_file:
