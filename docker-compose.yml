@@ -1,7 +1,7 @@
 version: '2'
 services:
   buildbot:
-    image: "buildbot/buildbot-master"
+    image: "buildbot/buildbot-master:master"
     env_file:
       - db.env
     environment:
@@ -14,9 +14,6 @@ services:
       - db
     depends_on:
       - db
-    expose:
-      - 8010
-      - 9989
   db:
     env_file:
       - db.env
@@ -25,7 +22,7 @@ services:
       - 5432
 
   worker:
-    image: "buildbot/buildbot-worker"
+    image: "buildbot/buildbot-worker:master"
     environment:
       BUILDMASTER: buildbot
       BUILDMASTER_PORT: 9989
